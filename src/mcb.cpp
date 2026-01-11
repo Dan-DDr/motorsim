@@ -49,5 +49,5 @@ Vector3d MotorControlTools::spaceVectorMod(Vector3d vAlphaBeta) {
 
     unsigned int sector = 0;
 
-    if (a > 0) {s}
+    // if (a > 0) {s}
 }
