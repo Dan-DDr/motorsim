@@ -52,8 +52,13 @@ double PID::clampOutput(double output) {
 
 // }
 
-
-
+/**
+ * @brief Calculates the output of the PID using Forward Euler approximation of
+ * Integrator and Differentiator.
+ * 
+ * @param error Error into PID. Setpoint - Measured
+ * @return double: Output of PID clamped between min and max limit.
+ */
 double PID::calcOutput(double error) {
     double k1, k2, k3;
     double output;

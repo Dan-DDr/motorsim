@@ -11,9 +11,10 @@ double wrapAngle(double angleRad) {
     return ang;
 }
 
-MotorModel::MotorModel(int n, double Rs, double Ld, double Lq, double L0, 
+MotorModel::MotorModel(double Ts, int n, double Rs, double Ld, double Lq, double L0, 
                     double pmFlux, double J, double bLoad, double tLoad, double efficiency) {
     MotorModel::n = n;
+    MotorModel::Ts = Ts;
     MotorModel::Rs = Rs;
     MotorModel::Ld = Ld;
     MotorModel::Lq = Lq;

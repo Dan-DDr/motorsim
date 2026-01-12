@@ -1,3 +1,6 @@
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
+
 class PID {
     private:
         /* data */
@@ -24,6 +27,7 @@ class PID {
         void setkP(double kP);
         void setkI(double kI);
         void setkD(double kD);
+        double getTs() {return Ts;}
 
         bool runModel(double t) {
             if ((t  - tprev) > Ts) {
@@ -37,4 +41,4 @@ class PID {
         double calcOutputForwardEuler(double error);
 };
 
-
+#endif

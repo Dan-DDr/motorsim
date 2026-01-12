@@ -1,3 +1,6 @@
+#ifndef MOTORMODEL_H
+#define MOTORMODEL_H
+
 #include <Eigen/Dense>
 #include <iostream>
 #include <vector>
@@ -22,6 +25,8 @@ class MotorModel {
         double J, bLoad, tLoad, efficiency;
         int n;
 
+        double Ts;
+
         std::vector<Vector<double, 5>> x;
         std::vector<double> t;
 
@@ -39,10 +44,11 @@ class MotorModel {
         std::vector<Vector<double,5>> get_x()   { return x; }
         double get_t(int i)                     { return t.at(i); }
         Vector<double, 5> get_x(int i)          { return x.at(i); }
+        double getTs() {return Ts;}
 
-
+    
         /*  Constructors */
-        MotorModel(int n, double Rs, double Ld, double Lq, double L0, 
+        MotorModel(double Ts, int n, double Rs, double Ld, double Lq, double L0, 
                     double pmFlux, double J, double bLoad, double tLoad, double efficiency);
         
         // ~MotorModel();
@@ -122,3 +128,6 @@ class Encoder {
         unsigned int getAngle(double angleRad);
 
 };
+
+
+#endif
