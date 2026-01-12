@@ -13,4 +13,5 @@ src/main.cpp
 src/controller.cpp
 src/mcb.cpp
 src/motorModel.cpp
+src/inverter.cpp
 )

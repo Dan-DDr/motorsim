@@ -30,7 +30,9 @@ class MotorLogger : public Logger {
             MotorLogger::mtr = mtr;
         };
         void dump() {
-
+            for (int i = 0; i < x.size(); i++) {
+                    std::cout << x.at(i) << std::endl;
+            }
         }
 
         void toCSV(std::string filename) {
@@ -86,7 +88,9 @@ class CtrlLogger : public Logger {
         };
 
         void dump() {
-
+            for (int i = 0; i < x.size(); i++) {
+                    std::cout << x.at(i) << std::endl;
+            }
         }
 
         void toCSV(std::string filename) {

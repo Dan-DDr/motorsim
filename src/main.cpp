@@ -39,8 +39,8 @@ int testLogger() {
     
     MotorModel m(dt, 4, 0.125, 0.393e-3, 0.393e-3, 0, 0.296/4, 0.33e-3, 0, 0, 100);
     
-    PID dCtrl(dt * 100, 0.125, 0.9, 0.0, vdc, -vdc);
-    PID qCtrl(dt * 100, 0.125, 0.9, 0.0, vdc, -vdc);
+    PID dCtrl(dt * 100, 0.125, 0, 0.0, vdc, -vdc);
+    PID qCtrl(dt * 100, 0.125, 0, 0.0, vdc, -vdc);
 
     MotorLogger motorLogger(&m);
     CtrlLogger qctrlLogger(&qCtrl);
@@ -51,10 +51,11 @@ int testLogger() {
     dctrlLogger.initHistory();
 
     double setpoint[2] = {10.0, 0.0};
-    double error[2];
-    double vdq[2];
+    double error[2] = {0, 0};
+    double vdq[2] = {0, 0};
     double setpoint_start = 0.1;
 
+    motorLogger.dump();
     for (int i = 0; i < steps; i++) {
         if (dCtrl.runModel(motorLogger.t.at(i)) && 
             qCtrl.runModel(motorLogger.t.at(i)) && 
@@ -63,15 +64,17 @@ int testLogger() {
             error[0] = setpoint[0] - static_cast<double>(motorLogger.x.back()(0));
             error[1] = setpoint[1] - static_cast<double>(motorLogger.x.back()(1));
             
-            // std::cout << "error: "<< error[0] << ", " << error[1] << std::endl;
+            std::cout << "error: "<< error[0] << ", " << error[1] << std::endl;
 
             dctrlLogger.log(&(error[0]));
             qctrlLogger.log(&(error[1]));
             
             vdq[0] = dctrlLogger.x.back()(1);
             vdq[1] = qctrlLogger.x.back()(1);
+
+            std::cout << "vdq: "<< vdq[0] << ", " << vdq[1] << std::endl;
         }
-        // std::cout << "x0: "<< motorLogger.x.back()(0) << std::endl;
+        std::cout << "x0: "<< motorLogger.x.back()(0) << std::endl;
         motorLogger.log(vdq);
 
     }

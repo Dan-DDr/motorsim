@@ -13,12 +13,13 @@ PID::PID(double Ts, double kP, double kI, double kD, double maxLimit, double min
 }
 
 void PID::reset() {
-    for (auto e : errorHistory) {
-        e = 0;
+    
+    for (int i=0; i < 2; i++) {
+        errorHistory[i] = 0;
     }
 
-    for (auto o : outputHistory) {
-        o = 0;
+    for (int i=0; i < 2; i++) {
+        outputHistory[i] = 0;
     }
 }
 
