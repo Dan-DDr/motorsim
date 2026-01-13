@@ -1,5 +1,15 @@
 #include <controller.h>
 
+/**
+ * @brief Construct a new PID::PID object
+ * 
+ * @param Ts 
+ * @param kP 
+ * @param kI 
+ * @param kD 
+ * @param maxLimit 
+ * @param minLimit 
+ */
 PID::PID(double Ts, double kP, double kI, double kD, double maxLimit, double minLimit) {
     
     PID::Ts = Ts;
@@ -12,6 +22,10 @@ PID::PID(double Ts, double kP, double kI, double kD, double maxLimit, double min
     reset();
 }
 
+/**
+ * @brief 
+ * 
+ */
 void PID::reset() {
     
     for (int i=0; i < 2; i++) {
@@ -23,7 +37,12 @@ void PID::reset() {
     }
 }
 
-
+/**
+ * @brief 
+ * 
+ * @param output 
+ * @return double 
+ */
 double PID::clampOutput(double output) {
     if (output >= maxLimit) {
         return maxLimit;

@@ -9,6 +9,10 @@
 #include <motorModel.h>
 #include <controller.h>
   
+/**
+ * @brief 
+ * 
+ */
 class Logger {
     public:
         int steps;
@@ -22,6 +26,10 @@ class Logger {
 
 };
 
+/**
+ * @brief 
+ * 
+ */
 class MotorLogger : public Logger {
     private:
         MotorModel* mtr;
@@ -77,6 +85,10 @@ class MotorLogger : public Logger {
         }
 };
 
+/**
+ * @brief 
+ * 
+ */
 class CtrlLogger : public Logger {
         private:
             PID* ctrl;

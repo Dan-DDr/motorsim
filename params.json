@@ -1,0 +1,25 @@
+{
+  "Motor": {
+    "Ts": 1e-5,
+    "Ld": 0.000393,
+    "Lq": 0.000393,
+    "Rs": 0.125,
+    "n": 4,
+    "pmFlux": 0.074,
+    "J": 0.00033,
+    "bLoad": 0
+  },
+  "CurrentCtrl": {
+    "Ts": 1e-4,
+    "Kp": 0.125,
+    "Ki": 0.5,
+    "Kd": 0,
+    "maxLimit": 40,
+    "minLimit": -40
+  },
+  "Sim" : {
+    "Mode": "DQ",
+    "Ts": 1e-5,
+    "ReferenceType": "Speed"
+  }
+}

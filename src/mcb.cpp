@@ -1,6 +1,11 @@
 #include <mcb.h>
 
-
+/**
+ * @brief 
+ * 
+ * @param angleRad 
+ * @return Matrix3d 
+ */
 Matrix3d MotorControlTools::parkT(double angleRad) {
     Matrix3d mat;
 
@@ -38,6 +43,12 @@ Matrix3d MotorControlTools::parkT(double angleRad) {
 //     return mat;
 // }
 
+/**
+ * @brief 
+ * 
+ * @param angleRad 
+ * @return Matrix3d 
+ */
 Matrix3d MotorControlTools::invParkT(double angleRad) {
     Matrix3d mat;
 
@@ -57,6 +68,12 @@ Matrix3d MotorControlTools::invParkT(double angleRad) {
     return mat;
 }
 
+/**
+ * @brief 
+ * 
+ * @param vAlphaBeta 
+ * @return Vector3d 
+ */
 Vector3d MotorControlTools::spaceVectorMod(Vector3d vAlphaBeta) {
     double Ta, Tb, Tc;
     Vector3d dc;
@@ -92,6 +109,12 @@ Vector3d MotorControlTools::spaceVectorMod(Vector3d vAlphaBeta) {
     return dc;
 }
 
+/**
+ * @brief Construct a new Motor Control Tools:: P W M:: P W M object
+ * 
+ * @param clkFreq 
+ * @param frequency 
+ */
 MotorControlTools::PWM::PWM(unsigned int clkFreq, double frequency) {
     counter = 0;
     PWM::clkFreq = clkFreq;
@@ -99,6 +122,13 @@ MotorControlTools::PWM::PWM(unsigned int clkFreq, double frequency) {
     state = 0;
 }
 
+/**
+ * @brief 
+ * 
+ * @param t 
+ * @param dutycycle 
+ * @return int 
+ */
 int MotorControlTools::PWM::runModel(double t, double dutycycle) {
     if (state == 0)
         counter += 1;

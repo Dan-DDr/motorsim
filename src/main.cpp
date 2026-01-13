@@ -39,8 +39,8 @@ int testLogger() {
     
     MotorModel m(dt, 4, 0.125, 0.393e-3, 0.393e-3, 0, 0.296/4, 0.33e-3, 0, 0, 100);
     
-    PID dCtrl(dt * 100, 0.125, 0, 0.0, vdc, -vdc);
-    PID qCtrl(dt * 100, 0.125, 0, 0.0, vdc, -vdc);
+    PID dCtrl(dt * 10, 0.125, 0.5, 0.0, vdc, -vdc);
+    PID qCtrl(dt * 10, 0.125, 0.5, 0.0, vdc, -vdc);
 
     MotorLogger motorLogger(&m);
     CtrlLogger qctrlLogger(&qCtrl);
