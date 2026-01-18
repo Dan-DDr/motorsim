@@ -1,18 +1,8 @@
-#include <iostream>
-#include <Eigen/Dense>
-#include <motorModel.h>
-#include <logging.h>
-#include <controller.h>
-#include <cstdlib>
+#include <main.h>
+
 
 using Eigen::Matrix3d;
 using Eigen::Vector3d;
-
-double dt = 0;
-int steps = 0;
-
-int runDQSimulation();
-int testLogger();
 
 
 int main(int argc, char* argv[]) {
@@ -29,7 +19,10 @@ int main(int argc, char* argv[]) {
     }
 
     // runDQSimulation();
-    testLogger();
+    // testLogger();
+    parseParams();
+
+    std::cout << DCtrl->getTs();
     
     return 0;
 }
@@ -87,6 +80,63 @@ int testLogger() {
 
 }
 
+int parseParams() {
+
+    FILE* file;
+    const int BUFFERSIZE = 10000;
+    char buffer[BUFFERSIZE] = {'\0'};
+    
+    file = fopen("params.json", "rb");
+
+
+    rapidjson::FileReadStream is(file, buffer, sizeof(buffer));
+    rapidjson::Document doc;
+
+    doc.ParseStream(is);
+    
+    if (doc.HasParseError()) {
+        std::cout << GetParseError_En(doc.GetParseError()) << std::endl;
+        std::cout << "parse error exiting" << std::endl;
+        exit(1);
+    }
+
+    if (doc.HasMember("Motor")) {
+        Motor = new MotorModel( doc["Motor"].GetObject()["Ts"].GetDouble(), 
+                            doc["Motor"].GetObject()["n"].GetUint(), 
+                            doc["Motor"].GetObject()["Rs"].GetDouble(), 
+                            doc["Motor"].GetObject()["Ld"].GetDouble(), 
+                            doc["Motor"].GetObject()["Lq"].GetDouble(), 
+                            0, 
+                            doc["Motor"].GetObject()["pmFlux"].GetDouble(), 
+                            doc["Motor"].GetObject()["J"].GetDouble(),
+                            0,
+                            0,
+                            100);
+    } else {
+        std::cout << "no motor model found" << std::endl;
+        exit(1);
+    }
+
+    if (doc.HasMember("CurrentCtrl")) {
+        DCtrl = new PID(doc["CurrentCtrl"].GetObject()["Ts"].GetDouble(),
+                    doc["CurrentCtrl"].GetObject()["Kp"].GetDouble(),
+                    doc["CurrentCtrl"].GetObject()["Ki"].GetDouble(),
+                    doc["CurrentCtrl"].GetObject()["Kd"].GetDouble(),
+                    doc["CurrentCtrl"].GetObject()["maxLimit"].GetDouble(),
+                    doc["CurrentCtrl"].GetObject()["minLimit"].GetDouble());
+
+        QCtrl =  new PID(doc["CurrentCtrl"].GetObject()["Ts"].GetDouble(),
+                    doc["CurrentCtrl"].GetObject()["Kp"].GetDouble(),
+                    doc["CurrentCtrl"].GetObject()["Ki"].GetDouble(),
+                    doc["CurrentCtrl"].GetObject()["Kd"].GetDouble(),
+                    doc["CurrentCtrl"].GetObject()["maxLimit"].GetDouble(),
+                    doc["CurrentCtrl"].GetObject()["minLimit"].GetDouble());
+    } else {
+        std::cout << "no ctrl model found" << std::endl;
+        exit(1);
+    }
+
+}
 
 int runDQSimulation() {
     const int vdc = 40;
