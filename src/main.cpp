@@ -19,10 +19,10 @@ int main(int argc, char* argv[]) {
     }
 
     // runDQSimulation();
-    // testLogger();
     parseParams();
+    testLogger();
 
-    std::cout << DCtrl->getTs();
+    
     
     return 0;
 }
@@ -30,34 +30,33 @@ int main(int argc, char* argv[]) {
 int testLogger() {
     const int vdc = 40;
     
-    MotorModel m(dt, 4, 0.125, 0.393e-3, 0.393e-3, 0, 0.296/4, 0.33e-3, 0, 0, 100);
+    // MotorModel m(dt, 4, 0.125, 0.393e-3, 0.393e-3, 0, 0.296/4, 0.33e-3, 0, 0, 100);
     
-    PID dCtrl(dt * 10, 0.125, 0.5, 0.0, vdc, -vdc);
-    PID qCtrl(dt * 10, 0.125, 0.5, 0.0, vdc, -vdc);
+    // PID dCtrl(dt * 10, 0.125, 0.5, 0.0, vdc, -vdc);
+    // PID qCtrl(dt * 10, 0.125, 0.5, 0.0, vdc, -vdc);
 
-    MotorLogger motorLogger(&m);
-    CtrlLogger qctrlLogger(&qCtrl);
-    CtrlLogger dctrlLogger(&dCtrl);
+    MotorLogger motorLogger(Motor);
+    CtrlLogger qctrlLogger(QCtrl);
+    CtrlLogger dctrlLogger(DCtrl);
 
     motorLogger.initHistory();
     qctrlLogger.initHistory();
     dctrlLogger.initHistory();
 
-    double setpoint[2] = {10.0, 0.0};
     double error[2] = {0, 0};
     double vdq[2] = {0, 0};
-    double setpoint_start = 0.1;
+    // double setpoint[2] = {10.0, 0.0};
+    // double setpoint_start = 0.001;
 
-    motorLogger.dump();
     for (int i = 0; i < steps; i++) {
-        if (dCtrl.runModel(motorLogger.t.at(i)) && 
-            qCtrl.runModel(motorLogger.t.at(i)) && 
-            (motorLogger.t.at(i) >= setpoint_start)) {
 
-            error[0] = setpoint[0] - static_cast<double>(motorLogger.x.back()(0));
-            error[1] = setpoint[1] - static_cast<double>(motorLogger.x.back()(1));
+        if (DCtrl->runModel(motorLogger.t.at(i)) && 
+            QCtrl->runModel(motorLogger.t.at(i)) && 
+            (motorLogger.t.at(i) >= SetpointStart)) {
+
+            error[0] = Setpoints[0] - static_cast<double>(motorLogger.x.back()(0));
+            error[1] = Setpoints[1] - static_cast<double>(motorLogger.x.back()(1));
             
-            std::cout << "error: "<< error[0] << ", " << error[1] << std::endl;
 
             dctrlLogger.log(&(error[0]));
             qctrlLogger.log(&(error[1]));
@@ -65,9 +64,7 @@ int testLogger() {
             vdq[0] = dctrlLogger.x.back()(1);
             vdq[1] = qctrlLogger.x.back()(1);
 
-            std::cout << "vdq: "<< vdq[0] << ", " << vdq[1] << std::endl;
         }
-        std::cout << "x0: "<< motorLogger.x.back()(0) << std::endl;
         motorLogger.log(vdq);
 
     }
@@ -135,7 +132,18 @@ int parseParams() {
         std::cout << "no ctrl model found" << std::endl;
         exit(1);
     }
-
+    
+    if (doc.HasMember("Sim")) {
+            Setpoints[0] = (doc["Sim"].GetObject()["Setpoints"].GetArray())[0].GetDouble();
+            Setpoints[1] = (doc["Sim"].GetObject()["Setpoints"].GetArray())[1].GetDouble();
+            SetpointStart = doc["Sim"].GetObject()["SetpointStart"].GetDouble();
+            dt = doc["Sim"].GetObject()["Ts"].GetDouble();
+            steps = doc["Sim"].GetObject()["Steps"].GetDouble();
+        
+    } else {
+        std::cout << "no Sim model found" << std::endl;
+        exit(1);
+    }
 }
 
 int runDQSimulation() {

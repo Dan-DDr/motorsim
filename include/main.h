@@ -22,6 +22,8 @@
 // Global Constants
 MotorModel *Motor;
 PID *DCtrl, *QCtrl;
+double Setpoints[2] = {0, 0};
+double SetpointStart = 0;
 
 double dt = 0;
 int steps = 0;

@@ -11,7 +11,7 @@
   },
   "CurrentCtrl": {
     "Ts": 1e-4,
-    "Kp": 0.125,
+    "Kp": 2,
     "Ki": 0.5,
     "Kd": 0,
     "maxLimit": 40,
@@ -20,6 +20,9 @@
   "Sim" : {
     "Mode": "DQ",
     "Ts": 1e-5,
-    "ReferenceType": "Speed"
+    "Steps": 100000,
+    "ReferenceType": "Current",
+    "Setpoints" : [0.0, 2.0],
+    "SetpointStart" : 0.01
   }
 }
