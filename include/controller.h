@@ -44,4 +44,15 @@ class PID {
         double calcOutputForwardEuler(double error);
 };
 
+
+class FOC {
+    public:
+        FOC();
+        void runModel();
+    private:
+        PID dCtrl;
+        PID qCtrl;
+
+};
+
 #endif

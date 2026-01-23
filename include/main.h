@@ -3,6 +3,7 @@
 
 // Standard Headers
 #include <iostream>
+#include <string>
 #include <cstdlib>
 
 // Eigen Library
@@ -20,6 +21,13 @@
 
 
 // Global Constants
+enum SimMode {
+    DQ,
+    ABC
+};
+
+std::map<std::string, SimMode> simMap = {{"DQ", DQ}, {"ABC", ABC}};
+
 MotorModel *Motor;
 PID *DCtrl, *QCtrl;
 double Setpoints[2] = {0, 0};
@@ -27,9 +35,12 @@ double SetpointStart = 0;
 
 double dt = 0;
 int steps = 0;
+SimMode mode = DQ;
+
 
 // Function Prototypes
 int runDQSimulation();
-int parseParams();
-int testLogger();
+int parseParams(char* filename);
+int testLoggerDQ();
+int testLoggerABC();
 #endif

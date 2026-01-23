@@ -6,10 +6,9 @@ using Eigen::Vector3d;
 
 
 int main(int argc, char* argv[]) {
-
     if (argc >= 2) {
-        steps = std::atoi(argv[1]);
-        dt = std::atof(argv[2]);
+        parseParams(argv[1]);
+        // dt = std::atof(argv[2]);
     } else {
         exit(1);
     }
@@ -18,24 +17,21 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    // runDQSimulation();
-    parseParams();
-    testLogger();
 
-    
-    
+
+    if (mode == SimMode::DQ)
+        testLoggerDQ();
+    else if (mode == SimMode::ABC) {
+        testLoggerABC();
+    }
+
     return 0;
 }
 
-int testLogger() {
+int testLoggerDQ() {
     const int vdc = 40;
-    
-    // MotorModel m(dt, 4, 0.125, 0.393e-3, 0.393e-3, 0, 0.296/4, 0.33e-3, 0, 0, 100);
-    
-    // PID dCtrl(dt * 10, 0.125, 0.5, 0.0, vdc, -vdc);
-    // PID qCtrl(dt * 10, 0.125, 0.5, 0.0, vdc, -vdc);
 
-    MotorLogger motorLogger(Motor);
+    MotorLoggerDQ motorLogger(Motor);
     CtrlLogger qctrlLogger(QCtrl);
     CtrlLogger dctrlLogger(DCtrl);
 
@@ -45,8 +41,7 @@ int testLogger() {
 
     double error[2] = {0, 0};
     double vdq[2] = {0, 0};
-    // double setpoint[2] = {10.0, 0.0};
-    // double setpoint_start = 0.001;
+
 
     for (int i = 0; i < steps; i++) {
 
@@ -77,14 +72,73 @@ int testLogger() {
 
 }
 
-int parseParams() {
+int testLoggerABC() {
+    const int vdc = 40;
+    
+    MotorLoggerABC motorLogger(Motor);
+    CtrlLogger qctrlLogger(QCtrl);
+    CtrlLogger dctrlLogger(DCtrl);
+
+    motorLogger.initHistory();
+    qctrlLogger.initHistory();
+    dctrlLogger.initHistory();
+
+    double error[2] = {0, 0};
+    double vabc[3] = {0, 0, 0};
+
+    Vector3d TempV;
+
+    for (int i = 0; i < steps; i++) {
+
+        if (DCtrl->runModel(motorLogger.t.at(i)) && 
+            QCtrl->runModel(motorLogger.t.at(i)) && 
+            (motorLogger.t.at(i) >= SetpointStart)) {
+
+            TempV(0) = motorLogger.x.back()(0);
+            TempV(1) = motorLogger.x.back()(1);
+            TempV(2) = motorLogger.x.back()(2);
+            TempV = MotorControlTools::parkT(motorLogger.x.back()(4)) * TempV;
+
+            error[0] = Setpoints[0] - static_cast<double>(TempV(0));
+            error[1] = Setpoints[1] - static_cast<double>(TempV(1));
+
+            dctrlLogger.log(&(error[0]));
+            qctrlLogger.log(&(error[1]));
+
+
+            TempV(0) = dctrlLogger.x.back()(1);
+            TempV(1) = qctrlLogger.x.back()(1);
+            TempV(2) = 0;
+            
+            TempV = Eigen::Inverse(MotorControlTools::parkT(motorLogger.x.back()(4))) * TempV;
+            vabc[0] = TempV(0);
+            vabc[1] = TempV(1);
+            vabc[2] = TempV(2);
+
+        }
+        motorLogger.log(vabc);
+
+    }
+
+    dctrlLogger.toCSV("dctrl.csv");
+    qctrlLogger.toCSV("qctrl.csv");
+    motorLogger.toCSV("motor.csv");
+
+    return 0;
+
+}
+
+int parseParams(char* filename) {
 
     FILE* file;
     const int BUFFERSIZE = 10000;
     char buffer[BUFFERSIZE] = {'\0'};
     
-    file = fopen("params.json", "rb");
-
+    file = fopen(filename, "rb");
+    if (!file) {
+        std::cout << "Can't open file " << filename <<". Exiting...";
+        exit(1);
+    }
 
     rapidjson::FileReadStream is(file, buffer, sizeof(buffer));
     rapidjson::Document doc;
@@ -139,11 +193,14 @@ int parseParams() {
             SetpointStart = doc["Sim"].GetObject()["SetpointStart"].GetDouble();
             dt = doc["Sim"].GetObject()["Ts"].GetDouble();
             steps = doc["Sim"].GetObject()["Steps"].GetDouble();
+            mode = simMap[doc["Sim"].GetObject()["Mode"].GetString()];
         
     } else {
         std::cout << "no Sim model found" << std::endl;
         exit(1);
     }
+
+    return 0;
 }
 
 int runDQSimulation() {
