@@ -110,7 +110,7 @@ int testLoggerABC() {
             TempV(1) = qctrlLogger.x.back()(1);
             TempV(2) = 0;
             
-            TempV = Eigen::Inverse(MotorControlTools::parkT(motorLogger.x.back()(4))) * TempV;
+            TempV = MotorControlTools::parkT(motorLogger.x.back()(4)).inverse() * TempV;
             vabc[0] = TempV(0);
             vabc[1] = TempV(1);
             vabc[2] = TempV(2);
