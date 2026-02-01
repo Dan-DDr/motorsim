@@ -4,13 +4,14 @@
 class PID {
     private:
         /* data */
-        double kP, kI, kD;
+        double kP, kI, kD; // Gains
         
         double Ts; // sample time
 
         double errorHistory[2];
         double outputHistory[2];
 
+        // Clamping Limits
         double maxLimit;
         double minLimit;
 
@@ -24,6 +25,8 @@ class PID {
         PID(double Ts, double kP, double kI, double kD, double maxLimit, double minLimit);
         
         void reset();
+        
+        // Setters & Getters
         void setkP(double kP);
         void setkI(double kI);
         void setkD(double kD);
@@ -39,6 +42,17 @@ class PID {
 
         double calcOutput(double error);
         double calcOutputForwardEuler(double error);
+};
+
+
+class FOC {
+    public:
+        FOC();
+        void runModel();
+    private:
+        PID dCtrl;
+        PID qCtrl;
+
 };
 
 #endif

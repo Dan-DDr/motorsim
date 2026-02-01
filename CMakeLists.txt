@@ -10,6 +10,7 @@ include_directories(include)
 
 target_sources(MOTORSIM PRIVATE
 src/main.cpp
+# src/params.cpp
 src/controller.cpp
 src/mcb.cpp
 src/motorModel.cpp

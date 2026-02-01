@@ -1,5 +1,11 @@
 #include <motorModel.h>
 
+/**
+ * @brief 
+ * 
+ * @param angleRad 
+ * @return double 
+ */
 double wrapAngle(double angleRad) {
     double ang;
     ang = std::fmod(angleRad, 2 * M_PI);
@@ -10,7 +16,21 @@ double wrapAngle(double angleRad) {
     
     return ang;
 }
-
+/**
+ * @brief Construct a new Motor Model:: Motor Model object
+ * 
+ * @param Ts 
+ * @param n 
+ * @param Rs 
+ * @param Ld 
+ * @param Lq 
+ * @param L0 
+ * @param pmFlux 
+ * @param J 
+ * @param bLoad 
+ * @param tLoad 
+ * @param efficiency 
+ */
 MotorModel::MotorModel(double Ts, int n, double Rs, double Ld, double Lq, double L0, 
                     double pmFlux, double J, double bLoad, double tLoad, double efficiency) {
     MotorModel::n = n;
@@ -27,6 +47,14 @@ MotorModel::MotorModel(double Ts, int n, double Rs, double Ld, double Lq, double
 
 }
 
+/**
+ * @brief 
+ * 
+ * @param t 
+ * @param v 
+ * @param x 
+ * @return Vector<double, 5> 
+ */
 Vector<double, 5> MotorModel::odeStep(double t, Vector<double, 3> v, Vector<double, 5> x) {
     Vector<double, 5> dxdt;
     double eTorque;
@@ -47,6 +75,15 @@ Vector<double, 5> MotorModel::odeStep(double t, Vector<double, 3> v, Vector<doub
     return dxdt;
 }
 
+/**
+ * @brief 
+ * 
+ * @param t 
+ * @param v 
+ * @param x 
+ * @param dt 
+ * @return Vector<double, 5> 
+ */
 Vector<double, 5> MotorModel::rk4Step(double t, Vector<double, 3> v, Vector<double, 5> x, double dt) {
     Vector<double, 5> k1, k2, k3, k4, xnew;
     k1 = odeStep(t, v,  x);
@@ -60,6 +97,15 @@ Vector<double, 5> MotorModel::rk4Step(double t, Vector<double, 3> v, Vector<doub
     return xnew;
 }
 
+/**
+ * @brief 
+ * 
+ * @param t 
+ * @param vDq 
+ * @param x 
+ * @param dt 
+ * @return Vector<double, 5> 
+ */
 Vector<double, 5> MotorModel::rk4StepDq(double t, Vector<double, 2> vDq, Vector<double, 5> x, double dt) {
     Vector3d v;
     Vector<double, 5> xnew;
@@ -72,6 +118,15 @@ Vector<double, 5> MotorModel::rk4StepDq(double t, Vector<double, 2> vDq, Vector<
     return xnew;
 }
 
+/**
+ * @brief 
+ * 
+ * @param t 
+ * @param vAbc 
+ * @param x 
+ * @param dt 
+ * @return Vector<double, 5> 
+ */
 Vector<double, 5> MotorModel::rk4StepAbc(double t, Vector<double, 3> vAbc, Vector<double, 5> x, double dt) {
     Vector3d v, i, vtmp;
     Vector<double, 5> xnew;
@@ -114,11 +169,22 @@ void MotorModel::toCSV(std::string filename) {
     file.close();
 }
 
+/**
+ * @brief Construct a new Encoder:: Encoder object
+ * 
+ * @param numBits 
+ * @param noiseFactor 
+ */
 Encoder::Encoder(int numBits, int noiseFactor) {
     Encoder::numBits = numBits;
     Encoder::noiseFactor = noiseFactor;
 }
 
+/**
+ * @brief 
+ * 
+ * @return double 
+ */
 double Encoder::getNoise() {
     std::random_device rd{};
     std::mt19937 gen{rd()};
@@ -128,6 +194,12 @@ double Encoder::getNoise() {
     return dist(gen);
 }
 
+/**
+ * @brief 
+ * 
+ * @param angleRad 
+ * @return unsigned int 
+ */
 unsigned int Encoder::getAngle(double angleRad) {
     double noise;
     
